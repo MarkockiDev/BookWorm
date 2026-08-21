@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BookWorm - Reading Tracker</title>
+  <meta name="description" content="BookWorm is a cozy iPhone reading tracker for books, ebooks, and audiobooks. Track progress, keep a bookshelf, and follow your reading streaks.">
+  <meta name="theme-color" content="#FDFAF5">
+  <meta property="og:title" content="BookWorm - Reading Tracker">
+  <meta property="og:description" content="A warm, simple reading tracker for your books, ebooks, and audiobooks.">
+  <meta property="og:image" content="assets/hero-home.jpg">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="assets/icon.png">
+  <link rel="apple-touch-icon" href="assets/icon.png">
+  <style>
+    :root {
+      color-scheme: light;
+      --cream: #FDFAF5;
+      --paper: #F6F0E6;
+      --paper-deep: #EDE4D5;
+      --ink: #2C1810;
+      --muted: #6B4E3D;
+      --soft: #9B8272;
+      --green: #4CAF72;
+      --green-dark: #327C4D;
+      --brown: #8B5E3C;
+      --gold: #C99732;
+      --white: #FFFDF8;
+      --shadow: 0 18px 50px rgba(44, 24, 16, .18);
+      --ease: cubic-bezier(.23, 1, .32, 1);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--cream);
+      color: var(--ink);
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    img { max-width: 100%; display: block; }
+
+    a { color: inherit; }
+
+    .nav {
+      position: fixed;
+      z-index: 10;
+      top: 16px;
+      left: 50%;
+      width: min(calc(100% - 32px), 1060px);
+      height: 58px;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 8px 10px 8px 12px;
+      border: 1px solid rgba(255, 253, 248, .58);
+      border-radius: 999px;
+      background: rgba(253, 250, 245, .72);
+      backdrop-filter: blur(22px) saturate(1.3);
+      box-shadow: 0 10px 30px rgba(44, 24, 16, .12);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      font-weight: 760;
+      letter-spacing: 0;
+      text-decoration: none;
+    }
+
+    .brand img {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(44, 24, 16, .18);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    .nav-links a {
+      padding: 8px 11px;
+      border-radius: 999px;
+      text-decoration: none;
+      transition: background-color 180ms var(--ease), color 180ms var(--ease), transform 150ms var(--ease);
+    }
+
+    .nav-links a:hover { background: rgba(255, 253, 248, .68); color: var(--ink); }
+    .nav-links a:active, .button:active { transform: scale(.97); }
+
+    .hero {
+      min-height: 92svh;
+      display: grid;
+      align-items: end;
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(90deg, rgba(44, 24, 16, .68) 0%, rgba(44, 24, 16, .42) 36%, rgba(44, 24, 16, .06) 72%),
+        url("assets/hero-home.jpg") center / cover no-repeat;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 26%;
+      background: linear-gradient(to bottom, rgba(253, 250, 245, 0), var(--cream));
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      width: min(1060px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 126px 0 10svh;
+    }
+
+    .hero-copy { max-width: 560px; color: var(--white); }
+
+    h1 {
+      margin: 0;
+      max-width: 9ch;
+      font-size: clamp(58px, 12vw, 132px);
+      line-height: .88;
+      letter-spacing: 0;
+      font-weight: 850;
+    }
+
+    .hero p {
+      max-width: 520px;
+      margin: 22px 0 0;
+      color: rgba(255, 253, 248, .9);
+      font-size: clamp(19px, 2.4vw, 26px);
+      font-weight: 520;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin-top: 30px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 54px;
+      padding: 0 22px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, .36);
+      text-decoration: none;
+      font-weight: 760;
+      transition: transform 150ms var(--ease), background-color 180ms var(--ease), box-shadow 180ms var(--ease);
+    }
+
+    .button.primary {
+      background: var(--green);
+      color: white;
+      box-shadow: 0 12px 30px rgba(76, 175, 114, .34);
+    }
+
+    .button.primary:hover { background: var(--green-dark); }
+
+    .button.secondary {
+      background: rgba(253, 250, 245, .16);
+      color: var(--white);
+      backdrop-filter: blur(14px);
+    }
+
+    main {
+      position: relative;
+      z-index: 2;
+      overflow: hidden;
+    }
+
+    .section {
+      width: min(1060px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 84px 0;
+    }
+
+    .intro {
+      display: grid;
+      grid-template-columns: .95fr 1.05fr;
+      gap: 64px;
+      align-items: center;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(38px, 6vw, 74px);
+      line-height: .96;
+      letter-spacing: 0;
+      font-weight: 850;
+    }
+
+    .lead {
+      margin: 20px 0 0;
+      color: var(--muted);
+      font-size: clamp(18px, 2vw, 22px);
+      font-weight: 500;
+    }
+
+    .reading-note {
+      position: relative;
+      padding: 30px 0;
+      border-block: 1px solid rgba(139, 94, 60, .2);
+    }
+
+    .reading-note::before {
+      content: "";
+      position: absolute;
+      inset: 14px auto auto 0;
+      width: 58px;
+      height: 4px;
+      border-radius: 999px;
+      background: var(--green);
+    }
+
+    .note-row {
+      display: grid;
+      grid-template-columns: minmax(116px, .34fr) 1fr;
+      gap: 22px;
+      padding: 20px 0;
+      border-bottom: 1px solid rgba(139, 94, 60, .12);
+    }
+
+    .note-row:last-child { border-bottom: 0; padding-bottom: 0; }
+
+    .note-row dt {
+      color: var(--green-dark);
+      font-size: clamp(20px, 3vw, 34px);
+      font-weight: 820;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .note-row dd {
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(17px, 1.8vw, 21px);
+      font-weight: 620;
+      text-wrap: pretty;
+    }
+
+    .tiny-progress {
+      display: block;
+      width: min(250px, 100%);
+      height: 8px;
+      margin-top: 12px;
+      border-radius: 999px;
+      background: var(--paper-deep);
+      overflow: hidden;
+    }
+
+    .tiny-progress span {
+      display: block;
+      width: 62%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--green), var(--gold));
+    }
+
+    .showcase {
+      width: min(1240px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 16px 0 92px;
+    }
+
+    .rail {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(260px, 1fr));
+      gap: 18px;
+    }
+
+    .shot {
+      overflow: hidden;
+      border-radius: 24px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      aspect-ratio: 16 / 10.5;
+    }
+
+    .shot img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 420ms var(--ease);
+    }
+
+    .shot:hover img { transform: scale(1.025); }
+
+    .feature-band {
+      background: var(--paper);
+      border-block: 1px solid rgba(139, 94, 60, .13);
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 34px;
+      align-items: center;
+    }
+
+    .feature-list {
+      display: grid;
+      gap: 14px;
+      margin-top: 28px;
+    }
+
+    .feature {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .glyph {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: var(--cream);
+      color: var(--green-dark);
+      box-shadow: 0 2px 10px rgba(139, 94, 60, .08);
+      font-weight: 900;
+    }
+
+    .feature h3 {
+      margin: 0 0 4px;
+      font-size: 19px;
+      line-height: 1.12;
+    }
+
+    .feature p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .phone-stack {
+      position: relative;
+      min-height: 640px;
+    }
+
+    .phone {
+      position: absolute;
+      overflow: hidden;
+      width: min(320px, 56vw);
+      border: 9px solid #211510;
+      border-radius: 46px;
+      background: #211510;
+      box-shadow: var(--shadow);
+    }
+
+    .phone img {
+      width: 100%;
+      height: auto;
+      border-radius: 36px;
+    }
+
+    .phone.one { top: 0; left: 7%; transform: rotate(-4deg); }
+    .phone.two { right: 4%; bottom: 0; transform: rotate(5deg); }
+
+    .final {
+      padding: 96px 20px;
+      text-align: center;
+      background:
+        radial-gradient(circle at 50% 0, rgba(76, 175, 114, .18), transparent 34%),
+        var(--cream);
+    }
+
+    .final img {
+      width: 86px;
+      height: 86px;
+      margin: 0 auto 20px;
+      border-radius: 24px;
+      box-shadow: 0 14px 32px rgba(44, 24, 16, .18);
+    }
+
+    .final h2 { max-width: 760px; margin: 0 auto; }
+    .final .lead { max-width: 590px; margin-inline: auto; }
+    .final .button { margin-top: 28px; }
+
+    footer {
+      padding: 28px 20px 42px;
+      color: var(--soft);
+      text-align: center;
+      font-size: 14px;
+    }
+
+    @media (max-width: 860px) {
+      .nav {
+        top: 10px;
+        width: calc(100% - 20px);
+        height: 52px;
+        padding: 7px 8px 7px 9px;
+      }
+      .brand { gap: 8px; font-size: 15px; }
+      .brand img { width: 34px; height: 34px; border-radius: 11px; }
+      .nav-links { font-size: 13px; }
+      .nav-links .keep {
+        background: var(--green);
+        color: white;
+        padding-inline: 13px;
+      }
+      .nav-links a:not(.keep) { display: none; }
+      .hero {
+        min-height: 78svh;
+        background:
+          linear-gradient(180deg, rgba(44, 24, 16, .04), rgba(44, 24, 16, .58) 52%, rgba(44, 24, 16, .86)),
+          url("assets/hero-home.jpg") 50% center / cover no-repeat;
+      }
+      .hero-inner {
+        width: min(100% - 28px, 560px);
+        padding-top: 96px;
+        padding-bottom: 7svh;
+      }
+      h1 { font-size: clamp(54px, 19vw, 88px); }
+      h2 { font-size: clamp(36px, 12vw, 56px); text-wrap: balance; }
+      .actions { align-items: stretch; }
+      .button { width: 100%; }
+      .hero .button.secondary { display: none; }
+      .intro, .features { grid-template-columns: 1fr; }
+      .intro { gap: 34px; }
+      .section { width: calc(100% - 28px); padding: 58px 0; }
+      .showcase {
+        width: 100%;
+        overflow-x: auto;
+        padding: 4px 14px 64px;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .showcase::-webkit-scrollbar { display: none; }
+      .rail { width: max-content; grid-template-columns: repeat(4, minmax(276px, 82vw)); }
+      .shot { scroll-snap-align: start; }
+      .features { gap: 42px; }
+      .phone-stack { min-height: 520px; }
+      .phone {
+        width: min(270px, 74vw);
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+      }
+      .phone.one { top: 0; left: 50%; transform: translateX(-50%); }
+      .phone.two { display: none; }
+    }
+
+    @media (max-width: 520px) {
+      .brand span { max-width: 122px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .hero-copy { color: var(--white); }
+      .hero p { font-size: 18px; max-width: 21rem; }
+      .lead { font-size: 17px; }
+      .reading-note { padding: 24px 0; }
+      .note-row { grid-template-columns: 1fr; gap: 8px; padding: 17px 0; }
+      .note-row dd { font-size: 17px; }
+      .phone-stack { min-height: 458px; }
+      .phone { width: min(236px, 72vw); border-width: 7px; border-radius: 38px; }
+      .phone img { border-radius: 30px; }
+      .final { padding: 74px 20px 84px; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav" aria-label="Primary navigation">
+    <a class="brand" href="#top" aria-label="BookWorm home">
+      <img src="assets/icon.png" alt="">
+      <span>BookWorm</span>
+    </a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a class="keep" href="https://apps.apple.com/us/app/bookworm-reading-tracker/id6761390761">Download</a>
+    </div>
+  </nav>
+
+  <header class="hero" id="top">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <h1>BookWorm</h1>
+        <p>Keep your bookshelf, reading streaks, daily goals, and finished-book moments in one warm little place.</p>
+        <div class="actions">
+          <a class="button primary" href="https://apps.apple.com/us/app/bookworm-reading-tracker/id6761390761" aria-label="Download BookWorm on the App Store">Download on the App Store</a>
+          <a class="button secondary" href="#features">See how it works</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section intro" aria-labelledby="intro-title">
+      <div>
+        <h2 id="intro-title">A calmer way to keep reading.</h2>
+        <p class="lead">BookWorm is built for readers who want progress without spreadsheets, pressure, or clutter. Add a book, update a page, and let the app remember the rest.</p>
+      </div>
+      <dl class="reading-note" aria-label="BookWorm highlights">
+        <div class="note-row">
+          <dt>01</dt>
+          <dd>Track books, ebooks, and audiobooks in one bookshelf.</dd>
+        </div>
+        <div class="note-row">
+          <dt>18 pages</dt>
+          <dd>Update today’s progress in seconds.<span class="tiny-progress" aria-hidden="true"><span></span></span></dd>
+        </div>
+        <div class="note-row">
+          <dt>31 days</dt>
+          <dd>See your reading rhythm across the month without digging through stats.</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="showcase" aria-label="BookWorm screenshots">
+      <div class="rail">
+        <figure class="shot"><img src="assets/bookshelf.jpg" alt="BookWorm bookshelf screen on an iPhone."></figure>
+        <figure class="shot"><img src="assets/progress.jpg" alt="BookWorm reading progress screen on an iPhone."></figure>
+        <figure class="shot"><img src="assets/calendar.jpg" alt="BookWorm calendar and reading streak screen on an iPhone."></figure>
+        <figure class="shot"><img src="assets/hero-home.jpg" alt="BookWorm home screen on an iPhone."></figure>
+      </div>
+    </section>
+
+    <section class="feature-band" id="features">
+      <div class="section features">
+        <div>
+          <h2>Everything readers check every day.</h2>
+          <p class="lead">Simple surfaces for the moments that matter: what you are reading, what comes next, and how far you have come.</p>
+          <div class="feature-list">
+            <article class="feature">
+              <span class="glyph">1</span>
+              <div><h3>Your bookshelf, sorted</h3><p>Separate reading, to-read, and finished titles without losing the full list.</p></div>
+            </article>
+            <article class="feature">
+              <span class="glyph">2</span>
+              <div><h3>Progress that feels visible</h3><p>Page counts, percentages, streaks, and monthly reading days stay easy to scan.</p></div>
+            </article>
+            <article class="feature">
+              <span class="glyph">3</span>
+              <div><h3>Made for all formats</h3><p>Books, ebooks, and audiobooks live side by side with format labels and clean filters.</p></div>
+            </article>
+          </div>
+        </div>
+        <div class="phone-stack" aria-hidden="true">
+          <div class="phone one"><img src="assets/home-portrait.png" alt=""></div>
+          <div class="phone two"><img src="assets/bookshelf-portrait.png" alt=""></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="final" aria-labelledby="final-title">
+      <img src="assets/icon.png" alt="">
+      <h2 id="final-title">Start your next chapter with BookWorm.</h2>
+      <p class="lead">A small, cozy tracker for building a reading life you can actually see.</p>
+      <a class="button primary" href="https://apps.apple.com/us/app/bookworm-reading-tracker/id6761390761">Download on the App Store</a>
+    </section>
+  </main>
+
+  <footer>
+    <span>BookWorm Reading Tracker</span>
+  </footer>
+</body>
+</html>
